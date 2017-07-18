@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html onselectstart="return false"><!--禁止复制文字全页-->
+	<head>
+		<meta charset="utf-8" />
+		<title>3D炫酷相册</title>
+		<meta name="keywords" content="炫酷" />
+		<meta name="description" content="3D" />
+		<style>
+			*{margin: 0;padding: 0;}
+			body{background: #222;perspective: 800px;}
+			#wrap
+			{
+				height: 200px;
+				width: 133px;
+				margin: auto;
+				position: relative;
+				transform-style: preserve-3d;
+			}
+			#wrap img
+			{
+				height: 200px;
+				width: 133px;
+				position: absolute;
+				box-shadow: 0 0 3px pink;
+				-webkit-box-reflect: below 5px -webkit-linear-gradient(top,rgba(0,0,0,0) 
+				40%,rgba(0,0,0,0.5) 100%);
+				border-radius: 5px;
+			}
+			#wrap p
+			{
+				position: absolute;
+				left: 50%;
+				top: 102%;
+				width: 1200px;
+				height: 1200px;
+				margin-left: -600px;
+				margin-top: -600px;
+				border-radius: 50%;
+				background: -webkit-radial-gradient(center center,600px 600px,rgba(122,122,122,0.2)
+				,rgba(0,0,0,0));
+				transform: rotateX(90deg);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="wrap">
+			<img src="img/1.jpg" />
+			<img src="img/2.jpg" />
+			<img src="img/3.jpg" />
+			<img src="img/4.jpg" />
+			<img src="img/5.jpg" />
+			<img src="img/6.jpg" />
+			<img src="img/7.jpg" />
+			<img src="img/8.jpg" />
+			<img src="img/9.jpg" />
+			<img src="img/10.jpg"/>
+			<img src="img/11.jpg"/>
+			<p></p>
+		</div>
+		<script>
+			var oWrap=document.getElementById('wrap');
+			var aImg=document.getElementsByTagName('img');
+			var ideg=360/aImg.length;
+			var nowX,nowY,lastX,lastY,minX,minY,roX=0,roY=0;
+			function H()
+			{
+				var cHeight = document.documentElement.clientHeight;
+			    oWrap.style.marginTop = cHeight/2 - 100 + 'px';
+			};
+			H();//页面加载直接调用
+			window.onresize=H();//浏览器大小改变调用
+			oWrap.onclick=function()
+			{
+				for(var i=0;i<aImg.length;i++)
+				{
+					aImg[i].style.transform = "rotateY(" + i*ideg + "deg) translateZ(350px)";
+					aImg[i].style.transition = "1s "+(aImg.length-1-i)*0.1+"s";
+				}
+				document.onmousedown=function(ev)
+				{
+					var e=ev||event;
+					lastX=e.clientX;
+					lastY=e.clientY;
+					this.onmousemove=function(ev)
+					{
+						var e=ev||event;
+						
+						nowX=e.clientX;
+						nowY=e.clientY;
+						
+						minX=nowX-lastX;
+						minY=nowY-lastY;
+						
+						roY+=minX*0.5;
+						roX-=minY*0.5;
+						
+						oWrap.style.transform="rotateX("+roX+"deg) rotateY("+roY+"deg)";
+						lastX=nowX;
+						lastY=nowY;
+						//console.log(minX,minY);
+					};
+					
+					this.onmouseup=function()
+					{
+						this.onmousemove=null;
+						this.onmouseup=null;
+						var timer=setInterval(function()//添加惯性
+						{
+							minX *= 0.95;
+							minY *= 0.95;
+							roY += minX*0.5;
+							roX -= minY*0.5;
+							oWrap.style.transform="rotateX("+roX+"deg) rotateY("+roY+"deg)";
+							if(Math.abs(minX)<0.1||Math.abs(minY)<0.1)
+							{
+								clearInterval(timer);
+							}
+						},13);
+					};
+					return false;//避免出现bug,在此类事件中很好用
+				}
+			};
+			//TODO提示我有事需要做
+		</script>
+	</body>
+</html>
